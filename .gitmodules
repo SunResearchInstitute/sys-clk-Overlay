@@ -1,0 +1,6 @@
+[submodule "libs/libtesla"]
+	path = libs/libtesla
+	url = https://github.com/WerWolv/libtesla
+[submodule "libs/SimpleIniParser"]
+	path = libs/SimpleIniParser
+	url = https://github.com/AtlasNX/SimpleIniParser.git
