@@ -2,6 +2,7 @@
 
 tsl::element::ToggleListItem *toggleItem;
 std::vector<ValueListItem *> ValueListItems;
+u64 programId;
 
 class GuiMain : public tsl::Gui
 {
@@ -30,6 +31,7 @@ public:
 
             return rootFrame;
         }
+        /*
         if (Utils::clk::getCurrentPorgramId() == 0)
         {
             tsl::element::CustomDrawer *warning = new tsl::element::CustomDrawer(0, 0, 100, FB_WIDTH, [](u16 x, u16 y, tsl::Screen *screen) {
@@ -41,7 +43,9 @@ public:
 
             return rootFrame;
         }
+        */
 
+        programId = Utils::clk::getCurrentPorgramId();
         tsl::element::List *clkList = new tsl::element::List();
 
         toggleItem = new tsl::element::ToggleListItem("sys-clk", state == ClkState::Enabled);
@@ -63,7 +67,7 @@ public:
         clkList->addItem(DockedMEM);
         ValueListItems.push_back(DockedMEM);
 
-        ValueListItem *HandheldCPU = new ValueListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handhandle_cpu"), "handhandle_cpu");
+        ValueListItem *HandheldCPU = new ValueListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handheld_cpu"), "handheld_cpu");
         //HandheldCPU->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(HandheldCPU);
         ValueListItems.push_back(HandheldCPU);
@@ -113,15 +117,22 @@ public:
 
     } // Called once before the overlay Exits. Exit services here
 
-    virtual  void onOverlayShow(tsl::Gui *gui)
+    virtual void onOverlayShow(tsl::Gui *gui)
     {
+        if (programId != Utils::clk::getCurrentPorgramId())
+        {
+            gui->closeGui();
+            gui->playIntroAnimation();
+            return;
+        }
+
         if (toggleItem != nullptr)
             toggleItem->setState(Utils::clk::getClkState() == ClkState::Enabled);
 
         for (ValueListItem *item : ValueListItems)
             item->setCurValue(Utils::clk::getConfigValuePos(item->getValues(), item->getExtData()));
 
-        tsl::Gui::playIntroAnimation();
+        gui->playIntroAnimation();
     }
 
     void onOverlayHide(tsl::Gui *gui)
@@ -129,7 +140,7 @@ public:
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
 
-        tsl::Gui::playOutroAnimation();
+        gui->playOutroAnimation();
     }
 };
 

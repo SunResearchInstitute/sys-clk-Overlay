@@ -41,15 +41,25 @@ void ChangeConfiguration(const std::vector<std::string> configValues, int valueS
     simpleIniParser::IniSection *section = config->findSection(buff, false);
     if (section == nullptr)
     {
-        config->sections.push_back(new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, buff));
-        section = config->findSection(buff, false);
+        section = new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, buff);
+        config->sections.push_back(section);
     }
 
     if (section->findFirstOption(configName) == nullptr)
-        section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, configValues.at(valueSelection)));
-
+    {
+        if (configValues.at(valueSelection) != "0")
+            section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, configValues.at(valueSelection)));
+    }
     else
-        section->findFirstOption(configName)->value = configValues.at(valueSelection);
+    {
+        if (configValues.at(valueSelection) != "0")
+            section->findFirstOption(configName)->value = configValues.at(valueSelection);
+        else
+        {
+            int res = findInVector<simpleIniParser::IniOption *>(section->options, section->findFirstOption(configName));
+            section->options.erase(section->options.begin() + (res - 1));
+        }
+    }
 
     if (section->findFirstOption(programName, false, simpleIniParser::IniOptionType::SemicolonComment, simpleIniParser::IniOptionSearchField::Value) == nullptr)
         section->options.insert(section->options.begin(), new simpleIniParser::IniOption(simpleIniParser::IniOptionType::SemicolonComment, "", programName));
@@ -114,12 +124,12 @@ u64 getCurrentPorgramId()
     {
         rc = pminfoGetProgramId(&programId, proccessId);
         if (R_FAILED(rc))
-            return 0;
+            return 0x0100000000001000;
         else
             return programId;
     }
     else
-        return 0;
+        return 0x0100000000001000;
 }
 
 std::string getProgramName(u64 programId)
