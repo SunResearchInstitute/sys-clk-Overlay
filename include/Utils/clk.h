@@ -10,7 +10,8 @@
 #define CONTENTSDIR "sdmc:/atmosphere/contents/00FF0000636C6BFF"
 #define CONFIGDIR "sdmc:/config/sys-clk"
 #define CONFIG_INI CONFIGDIR "/config.ini"
-
+#define FLAGSDIR CONTENTSDIR "/flags"
+#define BOOT2FLAG FLAGSDIR "/boot2.flag"
 #define PROGRAMDIR CONTENTSDIR "/exefs.nsp"
 
 const u64 sysClkTid = 0x00FF0000636C6BFF;
@@ -24,45 +25,47 @@ enum class ClkState
 };
 
 const std::vector<std::string> CPUClocks{
-    "1785",
-    "1683",
-    "1581",
-    "1428",
-    "1326",
-    "1224",
-    "1122",
-    "1020",
-    "918",
-    "816",
-    "714",
+    "0",
     "612",
-    "0"};
+    "714",
+    "816",
+    "918",
+    "1020",
+    "1122",
+    "1224",
+    "1326",
+    "1428",
+    "1581",
+    "1683",
+    "1785"};
 
 const std::vector<std::string> MEMClocks{
-    "1600",
-    "1331",
-    "1065",
-    "800",
+    "0",
     "665",
-    "0"};
+    "800",
+    "1065",
+    "1600",
+    "1331"};
 
 const std::vector<std::string> GPUClocks{
-    "921",
-    "844",
-    "768",
-    "691",
-    "614",
-    "537",
-    "460",
-    "384",
-    "307",
-    "230",
-    "153",
+    "0",
     "76",
-    "0"};
+    "153",
+    "230",
+    "307",
+    "384",
+    "460",
+    "537",
+    "614",
+    "691",
+    "768",
+    "844",
+    "921"};
 
 namespace Utils::clk
 {
+void EnableClkModule(bool toggleState);
+void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName);
 ClkState getClkState();
 u64 getCurrentPorgramId();
 std::string getProgramName(u64 programId);

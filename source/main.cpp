@@ -1,9 +1,15 @@
 #include "main.h"
 
+tsl::element::ToggleListItem *toggleItem;
+std::vector<ValueListItem *> ValueListItems;
+
 class GuiMain : public tsl::Gui
 {
 public:
-    GuiMain() {}
+    GuiMain()
+    {
+        this->setTitle("sys-clk-Overlay");
+    }
     ~GuiMain() {}
 
     // Called when switching Guis to create the new UI
@@ -38,69 +44,45 @@ public:
 
         tsl::element::List *clkList = new tsl::element::List();
 
-        clkList->addItem(new tsl::element::ToggleListItem("sys-clk", (state == ClkState::Enabled)));
+        toggleItem = new tsl::element::ToggleListItem("sys-clk", state == ClkState::Enabled);
+        toggleItem->setStateChangeListener(Utils::clk::EnableClkModule);
+        clkList->addItem(toggleItem);
 
         ValueListItem *DockedCPU = new ValueListItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        //DockedCPU->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(DockedCPU);
+        ValueListItems.push_back(DockedCPU);
 
         ValueListItem *DockedGPU = new ValueListItem("Docked GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "docked_gpu"), "docked_gpu");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        //DockedGPU->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(DockedGPU);
+        ValueListItems.push_back(DockedGPU);
 
         ValueListItem *DockedMEM = new ValueListItem("Docked MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "docked_mem"), "docked_mem");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        //DockedMEM->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(DockedMEM);
+        ValueListItems.push_back(DockedMEM);
 
-        ValueListItem *HandheldCPU = new ValueListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "hanhandle_cpu"), "hanhandle_cpu");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        ValueListItem *HandheldCPU = new ValueListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handhandle_cpu"), "handhandle_cpu");
+        //HandheldCPU->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(HandheldCPU);
+        ValueListItems.push_back(HandheldCPU);
 
         ValueListItem *HandheldGPU = new ValueListItem("Handheld GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "handheld_gpu"), "handheld_gpu");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        //HandheldGPU->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(HandheldGPU);
+        ValueListItems.push_back(HandheldGPU);
 
         ValueListItem *HandheldMEM = new ValueListItem("Handheld MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "handheld_mem"), "handheld_mem");
-        DockedCPU->setStateChangeListener(ChangeConfiguration);
+        //HandheldMEM->setStateChangeListener(ChangeConfiguration);
         clkList->addItem(HandheldMEM);
+        ValueListItems.push_back(HandheldMEM);
 
         rootFrame->addElement(clkList);
 
         return rootFrame;
     }
 };
-
-void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName)
-{
-    u64 programId = Utils::clk::getCurrentPorgramId();
-    std::string programName = Utils::clk::getProgramName(programId);
-    std::stringstream ss;
-    ss << 0 << std::hex << std::uppercase << programId;
-    auto buff = ss.str();
-    mkdir(CONFIGDIR, 0777);
-    fclose(fopen(CONFIG_INI, "a"));
-
-    simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
-
-    simpleIniParser::IniSection *section = config->findSection(buff, false);
-    if (section == nullptr)
-    {
-        config->sections.push_back(new simpleIniParser::IniSection(simpleIniParser::IniSectionType::Section, buff));
-        section = config->findSection(buff, false);
-    }
-
-    if (section->findFirstOption(configName) == nullptr)
-        section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, configValues.at(valueSelection)));
-
-    else
-        section->findFirstOption(configName)->value = configValues.at(valueSelection);
-
-    if (section->findFirstOption(programName, false, simpleIniParser::IniOptionType::SemicolonComment, simpleIniParser::IniOptionSearchField::Value) == nullptr)
-        section->options.insert(section->options.begin(), new simpleIniParser::IniOption(simpleIniParser::IniOptionType::SemicolonComment, "", programName));
-
-    config->writeToFile(CONFIG_INI);
-    delete config;
-}
 
 class SysClkOverlay : public tsl::Overlay
 {
@@ -110,14 +92,45 @@ public:
 
     tsl::Gui *onSetup()
     {
+        smInitialize();
         pmdmntInitialize();
+        pmshellInitialize();
+        nsInitialize();
+        pminfoInitialize();
+        smExit();
         return new GuiMain();
     } // Called once when the Overlay is created and should return the first Gui to load. Initialize services here
 
     virtual void onDestroy()
     {
+        for (ValueListItem *item : ValueListItems)
+            Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
+            
+        pmshellExit();
         pmdmntExit();
+        nsExit();
+        pminfoExit();
+
     } // Called once before the overlay Exits. Exit services here
+
+    virtual  void onOverlayShow(tsl::Gui *gui)
+    {
+        if (toggleItem != nullptr)
+            toggleItem->setState(Utils::clk::getClkState() == ClkState::Enabled);
+
+        for (ValueListItem *item : ValueListItems)
+            item->setCurValue(Utils::clk::getConfigValuePos(item->getValues(), item->getExtData()));
+
+        tsl::Gui::playIntroAnimation();
+    }
+
+    void onOverlayHide(tsl::Gui *gui)
+    {
+        for (ValueListItem *item : ValueListItems)
+            Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
+
+        tsl::Gui::playOutroAnimation();
+    }
 };
 
 // This function gets called on startup to create a new Overlay object

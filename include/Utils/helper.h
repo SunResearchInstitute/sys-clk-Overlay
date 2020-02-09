@@ -13,11 +13,11 @@ int findInVector(const std::vector<T> &vecOfElements, const T &element)
 
     if (it != vecOfElements.end())
     {
-        result = distance(vecOfElements.begin(), it);
+        result = std::distance(vecOfElements.begin(), it);
     }
     else
     {
-        result = -1;
+        result = 0;
     }
 
     return result;

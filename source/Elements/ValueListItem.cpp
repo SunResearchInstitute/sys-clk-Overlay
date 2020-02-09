@@ -1,6 +1,6 @@
 #include <valueListItem.h>
 
-ValueListItem::ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, std::string data) : tsl::element::ListItem(text), m_values(values), m_curValue(defaultPos), extdata(data)
+ValueListItem::ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::element::ListItem(text), m_values(values), m_curValue(defaultPos), extdata(data)
 {
 }
 
