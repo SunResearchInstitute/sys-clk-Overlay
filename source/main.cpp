@@ -109,7 +109,7 @@ public:
     {
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
-            
+
         pmshellExit();
         pmdmntExit();
         nsExit();
