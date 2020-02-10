@@ -55,10 +55,7 @@ void ChangeConfiguration(const std::vector<std::string> configValues, int valueS
         if (configValues.at(valueSelection) != "0")
             section->findFirstOption(configName)->value = configValues.at(valueSelection);
         else
-        {
-            int res = findInVector<simpleIniParser::IniOption *>(section->options, section->findFirstOption(configName));
-            section->options.erase(section->options.begin() + (res - 1));
-        }
+            section->options.erase(findIT(section->options, section->findFirstOption(configName)));
     }
 
     if (section->findFirstOption(programName, false, simpleIniParser::IniOptionType::SemicolonComment, simpleIniParser::IniOptionSearchField::Value) == nullptr)
@@ -134,6 +131,9 @@ u64 getCurrentPorgramId()
 
 std::string getProgramName(u64 programId)
 {
+    if (programId == 0x0100000000001000)
+        return std::string("Home Menu");
+
     static NsApplicationControlData appControlData;
     size_t appControlDataSize = 0;
     NacpLanguageEntry *languageEntry = nullptr;
