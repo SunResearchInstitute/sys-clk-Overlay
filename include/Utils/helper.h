@@ -15,3 +15,9 @@ int findInVector(const std::vector<T> &vecOfElements, const T &element)
     else
         return 0;
 }
+
+template <typename T>
+auto findIT(const std::vector<T> &vecOfElements, const T &element)
+{
+    return std::find(vecOfElements.begin(), vecOfElements.end(), element);
+}

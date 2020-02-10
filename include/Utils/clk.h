@@ -44,8 +44,8 @@ const std::vector<std::string> MEMClocks{
     "665",
     "800",
     "1065",
-    "1600",
-    "1331"};
+    "1331",
+    "1600"};
 
 const std::vector<std::string> GPUClocks{
     "0",
