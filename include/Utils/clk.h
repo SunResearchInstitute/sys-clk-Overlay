@@ -67,7 +67,7 @@ namespace Utils::clk
 void EnableClkModule(bool toggleState);
 void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName);
 ClkState getClkState();
-u64 getCurrentPorgramId();
+u64 getCurrentProgramId();
 std::string getProgramName(u64 programId);
 int getConfigValuePos(const std::vector<std::string> values, std::string value);
 } // namespace Utils::clk

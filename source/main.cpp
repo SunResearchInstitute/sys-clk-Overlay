@@ -32,7 +32,7 @@ public:
             return rootFrame;
         }
 
-        programId = Utils::clk::getCurrentPorgramId();
+        programId = Utils::clk::getCurrentProgramId();
         this->setSubtitle(Utils::clk::getProgramName(programId));
         tsl::element::List *clkList = new tsl::element::List();
 
@@ -102,7 +102,7 @@ public:
 
     virtual void onOverlayShow(tsl::Gui *gui)
     {
-        if (programId != Utils::clk::getCurrentPorgramId())
+        if (programId != Utils::clk::getCurrentProgramId())
         {
             gui->closeGui();
             gui->playIntroAnimation();

@@ -28,7 +28,7 @@ void EnableClkModule(bool toggleState)
 
 void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName)
 {
-    u64 programId = Utils::clk::getCurrentPorgramId();
+    u64 programId = Utils::clk::getCurrentProgramId();
     std::string programName = Utils::clk::getProgramName(programId);
     std::stringstream ss;
     ss << 0 << std::hex << std::uppercase << programId;
@@ -67,7 +67,7 @@ void ChangeConfiguration(const std::vector<std::string> configValues, int valueS
 
 int getConfigValuePos(const std::vector<std::string> values, std::string value)
 {
-    u64 programId = getCurrentPorgramId();
+    u64 programId = getCurrentProgramId();
     std::string programName = getProgramName(programId);
 
     std::stringstream ss;
@@ -75,17 +75,17 @@ int getConfigValuePos(const std::vector<std::string> values, std::string value)
     std::string buff = ss.str();
     simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
     simpleIniParser::IniSection *section = config->findSection(buff, false);
+    int result = 0;
 
     if (section != nullptr)
     {
         simpleIniParser::IniOption *option = section->findFirstOption(value);
         if (option != nullptr)
-            return findInVector<std::string>(values, option->value);
-        else
-            return 0;
+            result = findInVector<std::string>(values, option->value);
     }
-    else
-        return 0;
+    
+    delete config;
+    return result;
 }
 
 ClkState getClkState()
@@ -111,7 +111,7 @@ ClkState getClkState()
     return clkState;
 }
 
-u64 getCurrentPorgramId()
+u64 getCurrentProgramId()
 {
     Result rc;
     u64 proccessId;
