@@ -32,7 +32,7 @@ void ChangeConfiguration(const std::vector<std::string> configValues, int valueS
     std::string programName = Utils::clk::getProgramName(programId);
     std::stringstream ss;
     ss << 0 << std::hex << std::uppercase << programId;
-    auto buff = ss.str();
+    std::string buff = ss.str();
     mkdir(CONFIGDIR, 0777);
     fclose(fopen(CONFIG_INI, "a"));
 
@@ -121,17 +121,17 @@ u64 getCurrentProgramId()
     {
         rc = pminfoGetProgramId(&programId, proccessId);
         if (R_FAILED(rc))
-            return 0x0100000000001000;
+            return 0x0100000000001000ULL;
         else
             return programId;
     }
     else
-        return 0x0100000000001000;
+        return 0x0100000000001000ULL;
 }
 
 std::string getProgramName(u64 programId)
 {
-    if (programId == 0x0100000000001000)
+    if (programId == 0x0100000000001000ULL)
         return std::string("Home Menu");
 
     static NsApplicationControlData appControlData;

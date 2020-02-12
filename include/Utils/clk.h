@@ -14,7 +14,7 @@
 #define BOOT2FLAG FLAGSDIR "/boot2.flag"
 #define PROGRAMDIR CONTENTSDIR "/exefs.nsp"
 
-const u64 sysClkTid = 0x00FF0000636C6BFF;
+const u64 sysClkTid = 0x00FF0000636C6BFFULL;
 
 enum class ClkState
 {
