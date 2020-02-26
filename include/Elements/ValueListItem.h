@@ -1,21 +1,18 @@
 #pragma once
-
-#include <overlay/elements/element.hpp>
-#include <overlay/elements/list_item.hpp>
-
 #include <string>
 #include <functional>
+#include <tesla.hpp>
 
-class ValueListItem : public tsl::element::ListItem
+class ValueListItem : public tsl::elm::ListItem
 {
 public:
     ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string extData);
     ~ValueListItem();
 
-    tsl::element::Element *requestFocus(Element *oldFocus, FocusDirection direction) override;
+    tsl::elm::Element *requestFocus(Element *oldFocus, tsl::FocusDirection direction) override;
 
-    void draw(tsl::Screen *screen, u16 x, u16 y) override;
-    void layout() override;
+    void draw(tsl::gfx::Renderer *renderer) override;
+    virtual void layout(u16 parentX, u16 parentY, u16 parentWidth, u16 parentHeight) override {}
 
     int getCurValue() { return this->m_curValue; }
     void setCurValue(int value) { this->m_curValue = value; }
@@ -24,13 +21,13 @@ public:
 
     const std::vector<std::string> getValues() { return this->m_values; }
 
-    bool onClick(s64 key) override;
-
-    void setStateChangeListener(std::function<void(const std::vector<std::string>, int, std::string)> valueChangeListener) { this->m_valueChangeListener = valueChangeListener; }
+    bool onClick(u64 key) override;
 
 private:
     const std::vector<std::string> m_values;
     int m_curValue;
     std::function<void(const std::vector<std::string>, int, std::string)> m_valueChangeListener = nullptr;
     const std::string extdata;
+    bool m_faint = false;
+    u16 m_valueWidth = 0;
 };

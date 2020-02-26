@@ -1,33 +1,30 @@
 #include <valueListItem.h>
 
-ValueListItem::ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::element::ListItem(text), m_values(values), m_curValue(defaultPos), extdata(data)
+ValueListItem::ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::elm::ListItem(text), m_values(values), m_curValue(defaultPos), extdata(data) {}
+
+ValueListItem::~ValueListItem() {}
+
+tsl::elm::Element *ValueListItem::requestFocus(Element *oldFocus, tsl::FocusDirection direction)
 {
+    return this;
 }
 
-ValueListItem::~ValueListItem()
+void ValueListItem::draw(tsl::gfx::Renderer *renderer)
 {
+    if (this->m_valueWidth == 0)
+    {
+        auto [width, height] = renderer->drawString(m_values.at(m_curValue).c_str(), false, 0, 0, 20, tsl::style::color::ColorTransparent);
+        this->m_valueWidth = width;
+    }
+
+    renderer->drawRect(this->getX(), this->getY(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
+    renderer->drawRect(this->getX(), this->getY() + this->getHeight(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
+
+    renderer->drawString(m_values.at(m_curValue).c_str(), false, this->getX() + 20, this->getY() + 45, 23, a({0xF, 0xF, 0xF, 0xF}));
+    renderer->drawString(m_values.at(m_curValue).c_str(), false, this->getX() + this->getWidth() - this->m_valueWidth - 20, this->getY() + 45, 20, this->m_faint ? a({0x6, 0x6, 0x6, 0xF}) : a({0x5, 0xC, 0xA, 0xF}));
 }
 
-tsl::element::Element *ValueListItem::requestFocus(Element *oldFocus, FocusDirection direction)
-{
-    return ListItem::requestFocus(oldFocus, direction);
-}
-
-void ValueListItem::draw(tsl::Screen *screen, u16 x1, u16 y1)
-{
-    const auto [x, y] = this->getPosition();
-    const auto [w, h] = this->getSize();
-
-    ListItem::draw(screen, x1, y1);
-    screen->drawString(m_values.at(m_curValue).c_str(), false, w - 8, y + 42, 19, a({0x5, 0xC, 0xA, 0xF}));
-}
-
-void ValueListItem::layout()
-{
-    ListItem::layout();
-}
-
-bool ValueListItem::onClick(s64 key)
+bool ValueListItem::onClick(u64 key)
 {
     if (key & KEY_A)
     {
@@ -37,9 +34,6 @@ bool ValueListItem::onClick(s64 key)
             m_curValue = size - 1;
         if (size <= m_curValue)
             m_curValue = 0;
-
-        if (this->m_valueChangeListener != nullptr)
-            this->m_valueChangeListener(this->m_values, this->m_curValue, this->extdata);
 
         return true;
     }

@@ -43,7 +43,7 @@ TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	source source/Elements source/Utils
 DATA		:=	data
-INCLUDES	:=	include include/Elements include/Utils
+INCLUDES	:=	include include/Elements include/Utils libs/libtesla/include
 
 NO_ICON		:=  1
 
@@ -57,18 +57,18 @@ CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 
 CFLAGS	+=	$(INCLUDE) -D__SWITCH__
 
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=c++17
+CXXFLAGS	:= $(CFLAGS) -fno-exceptions -std=c++17
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lnx -ltesla -lnx -lSimpleIniParser
+LIBS	:= -lnx -lnx -lSimpleIniParser
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(TOPDIR)/libs/libtesla $(TOPDIR)/libs/SimpleIniParser
+LIBDIRS	:= $(PORTLIBS) $(LIBNX) $(TOPDIR)/libs/SimpleIniParser
 
 
 #---------------------------------------------------------------------------------
@@ -170,9 +170,8 @@ $(BUILD):
 
 #---------------------------------------------------------------------------------
 clean:
-	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/libtesla -f Makefile clean
+	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/SimpleIniParser -f Makefile clean
 	@rm -fr $(BUILD) $(TARGET).ovl $(TARGET).nro $(TARGET).nacp $(TARGET).elf
-
 
 #---------------------------------------------------------------------------------
 else
@@ -189,21 +188,12 @@ $(OUTPUT).ovl		:	$(OUTPUT).elf $(OUTPUT).nacp
 	@elf2nro $< $@ $(NROFLAGS)
 	@echo "built ... $(notdir $(OUTPUT).ovl)"
 
-$(OUTPUT).elf	:	$(OFILES) libs/libtesla/lib/libtesla.a
+$(OUTPUT).elf	:	$(OFILES)
 
 $(OFILES_SRC)	: $(HFILES_BIN)
 
-libs/libtesla/lib/libtesla.a:
-	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/libtesla -f Makefile
-	
 libs/SimpleIniParser/lib/libSimpleIniParser.a:
 	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/SimpleIniParser -f Makefile
-	
-clean:
-	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/SimpleIniParser -f Makefile clean
-	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/libtesla -f Makefile clean
-	@rm -fr $(BUILD) $(TARGET).ovl $(TARGET).nro $(TARGET).nacp $(TARGET).elf
-
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------

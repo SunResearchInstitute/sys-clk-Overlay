@@ -1,43 +1,33 @@
+#define TESLA_INIT_IMPL
 #include "main.h"
 
-tsl::element::ToggleListItem *toggleItem;
+tsl::elm::ToggleListItem *toggleItem;
 std::vector<ValueListItem *> ValueListItems;
 u64 programId;
 
 class GuiMain : public tsl::Gui
 {
 public:
-    GuiMain()
+    virtual tsl::elm::Element *createUI() override
     {
-        this->setTitle("sys-clk-Overlay");
-    }
-    ~GuiMain() {}
-
-    // Called when switching Guis to create the new UI
-    virtual tsl::Element *createUI()
-    {
-        tsl::element::Frame *rootFrame = new tsl::element::Frame();
-
+        tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", "");
         ClkState state = Utils::clk::getClkState();
+
         if ((int)state < 0)
         {
-            //Stolen from ovl-sysmodules
-            tsl::element::CustomDrawer *warning = new tsl::element::CustomDrawer(0, 0, 100, FB_WIDTH, [](u16 x, u16 y, tsl::Screen *screen) {
-                screen->drawString("\uE150", false, 180, 250, 90, tsl::a(0xFFFF));
-                screen->drawString("Could not load sys-clk!", false, 110, 340, 25, tsl::a(0xFFFF));
+            tsl::elm::List::CustomDrawer *warning = new tsl::elm::List::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
+                render->drawString("\uE150", false, 180, 250, 90, tsl::gfx::Renderer::a(0xFFFF));
+                render->drawString("Could not load sys-clk!", false, 110, 340, 25, tsl::gfx::Renderer::a(0xFFFF));
             });
 
-            rootFrame->addElement(warning);
-
+            rootFrame->setContent(warning);
             return rootFrame;
         }
 
         programId = Utils::clk::getCurrentProgramId();
-        this->setSubtitle(Utils::clk::getProgramName(programId));
-        tsl::element::List *clkList = new tsl::element::List();
+        tsl::elm::List *clkList = new tsl::elm::List();
 
-        toggleItem = new tsl::element::ToggleListItem("sys-clk", state == ClkState::Enabled);
-        toggleItem->setStateChangeListener(Utils::clk::EnableClkModule);
+        toggleItem = new tsl::elm::ToggleListItem("sys-clk", state == ClkState::Enabled);
         clkList->addItem(toggleItem);
 
         ValueListItem *DockedCPU = new ValueListItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
@@ -64,48 +54,39 @@ public:
         clkList->addItem(HandheldMEM);
         ValueListItems.push_back(HandheldMEM);
 
-        rootFrame->addElement(clkList);
+        rootFrame->setContent(clkList);
 
         return rootFrame;
     }
 };
 
-class SysClkOverlay : public tsl::Overlay
+class SysClkOverlay : public tsl::Overlay<GuiMain>
 {
 public:
-    SysClkOverlay() {}
-    ~SysClkOverlay() {}
-
-    tsl::Gui *onSetup()
+    virtual void initServices() override
     {
         smInitialize();
-        pmdmntInitialize();
         pmshellInitialize();
         nsInitialize();
         pminfoInitialize();
+    }
 
-        return new GuiMain();
-    } // Called once when the Overlay is created and should return the first Gui to load. Initialize services here
-
-    virtual void onDestroy()
+    virtual void exitServices() override
     {
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
 
         pmshellExit();
-        pmdmntExit();
         nsExit();
         pminfoExit();
         smExit();
+    }
 
-    } // Called once before the overlay Exits. Exit services here
-
-    virtual void onOverlayShow(tsl::Gui *gui)
+    virtual void onShow() override
     {
         if (programId != Utils::clk::getCurrentProgramId())
         {
-            gui->closeGui();
-            gui->playIntroAnimation();
+            this->close();
             return;
         }
 
@@ -114,21 +95,16 @@ public:
 
         for (ValueListItem *item : ValueListItems)
             item->setCurValue(Utils::clk::getConfigValuePos(item->getValues(), item->getExtData()));
-
-        gui->playIntroAnimation();
     }
 
-    void onOverlayHide(tsl::Gui *gui)
+    virtual void onHide() override
     {
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
-
-        gui->playOutroAnimation();
     }
 };
 
-// This function gets called on startup to create a new Overlay object
-tsl::Overlay *overlayLoad()
+int main(int argc, char **argv)
 {
-    return new SysClkOverlay();
+    return tsl::loop<SysClkOverlay>(argc, argv);
 }
