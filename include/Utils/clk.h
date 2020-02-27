@@ -1,7 +1,6 @@
 #pragma once
 #include <switch.h>
 #include <filesystem>
-#include <vector>
 #include <cstring>
 #include <SimpleIniParser.hpp>
 #include <sys/stat.h>

@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <functional>
 #include <tesla.hpp>
 
 class ValueListItem : public tsl::elm::ListItem
@@ -36,7 +35,6 @@ public:
 
             return true;
         }
-
         return false;
     }
 

@@ -6,7 +6,7 @@ void ToggleClkModule(bool toggleState)
 {
     if (toggleState == (getClkState() == ClkState::Enabled) || !toggleState == (getClkState() == ClkState::Disabled))
         return;
-    
+
     if (toggleState)
     {
         NcmProgramLocation programLocation{
@@ -86,7 +86,7 @@ int getConfigValuePos(const std::vector<std::string> values, std::string value)
         if (option != nullptr)
             result = findInVector<std::string>(values, option->value);
     }
-    
+
     delete config;
     return result;
 }

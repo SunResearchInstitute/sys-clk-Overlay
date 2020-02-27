@@ -100,7 +100,7 @@ public:
     virtual void onHide() override
     {
         Utils::clk::ToggleClkModule(toggleItem->getState());
-        
+
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
     }
