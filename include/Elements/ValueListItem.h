@@ -2,10 +2,10 @@
 #include <string>
 #include <tesla.hpp>
 
-class ValueListItem : public tsl::elm::ListItem
+class ValueListItem : public tsl::elm::Element
 {
 public:
-    ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::elm::ListItem(text), m_values(values), m_curValue(defaultPos), extdata(data) {}
+    ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::elm::Element(), m_text(text), m_values(values), m_curValue(defaultPos), m_extdata(data) {}
 
     virtual void draw(tsl::gfx::Renderer *renderer) override
     {
@@ -38,10 +38,29 @@ public:
         return false;
     }
 
+    virtual Element *requestFocus(Element *oldFocus, tsl::FocusDirection direction) override
+    {
+        return this;
+    }
+
+    virtual inline void setText(std::string text) final
+    {
+        this->m_text = text;
+    }
+
+    virtual inline void setValue(int curValue, bool faint = false) final
+    {
+        this->m_curValue = curValue;
+        this->m_faint = faint;
+        this->m_valueWidth = 0;
+    }
+
+    virtual void layout(u16 parentX, u16 parentY, u16 parentWidth, u16 parentHeight) override {}
+
     int getCurValue() { return this->m_curValue; }
     void setCurValue(int value) { this->m_curValue = value; }
 
-    const std::string getExtData() { return this->extdata; }
+    const std::string getExtData() { return this->m_extdata; }
 
     const std::vector<std::string> getValues() { return this->m_values; }
 
@@ -49,7 +68,7 @@ private:
     std::string m_text;
     const std::vector<std::string> m_values;
     int m_curValue;
-    const std::string extdata;
+    const std::string m_extdata;
     bool m_faint = false;
     u16 m_valueWidth = 0;
 };
