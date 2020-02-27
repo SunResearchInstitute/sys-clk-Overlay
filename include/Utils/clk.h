@@ -64,7 +64,7 @@ const std::vector<std::string> GPUClocks{
 
 namespace Utils::clk
 {
-void EnableClkModule(bool toggleState);
+void ToggleClkModule(bool toggleState);
 void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName);
 ClkState getClkState();
 u64 getCurrentProgramId();

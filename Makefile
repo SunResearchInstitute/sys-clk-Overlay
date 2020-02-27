@@ -166,6 +166,7 @@ all: $(BUILD)
 
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
+	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/SimpleIniParser -f Makefile
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
@@ -192,8 +193,6 @@ $(OUTPUT).elf	:	$(OFILES)
 
 $(OFILES_SRC)	: $(HFILES_BIN)
 
-libs/SimpleIniParser/lib/libSimpleIniParser.a:
-	@$(MAKE) --no-print-directory -C $(TOPDIR)/libs/SimpleIniParser -f Makefile
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------

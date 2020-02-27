@@ -16,8 +16,8 @@ public:
         if ((int)state < 0)
         {
             tsl::elm::List::CustomDrawer *warning = new tsl::elm::List::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
-                render->drawString("\uE150", false, 180, 250, 90, tsl::gfx::Renderer::a(0xFFFF));
-                render->drawString("Could not load sys-clk!", false, 110, 340, 25, tsl::gfx::Renderer::a(0xFFFF));
+                render->drawString("\uE150", false, 180, 250, 90, a(0xFFFF));
+                render->drawString("Could not load sys-clk!", false, 110, 340, 25, a(0xFFFF));
             });
 
             rootFrame->setContent(warning);
@@ -99,6 +99,8 @@ public:
 
     virtual void onHide() override
     {
+        Utils::clk::ToggleClkModule(toggleItem->getState());
+        
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
     }
