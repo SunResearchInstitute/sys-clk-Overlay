@@ -103,6 +103,8 @@ public:
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());
     }
+
+    virtual std::unique_ptr<tsl::Gui> loadInitialGui() override { return initially<GuiMain>(); }
 };
 
 int main(int argc, char **argv)
