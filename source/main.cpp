@@ -66,7 +66,6 @@ class SysClkOverlay : public tsl::Overlay
 public:
     virtual void initServices() override
     {
-        smInitialize();
         pmshellInitialize();
         nsInitialize();
         pminfoInitialize();
@@ -80,7 +79,6 @@ public:
         pmshellExit();
         nsExit();
         pminfoExit();
-        smExit();
     }
 
     virtual void onShow() override
