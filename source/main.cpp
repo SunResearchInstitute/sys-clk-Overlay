@@ -15,7 +15,7 @@ public:
 
         if ((int)state < 0)
         {
-            tsl::elm::List::CustomDrawer *warning = new tsl::elm::List::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
+            tsl::elm::CustomDrawer *warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
                 render->drawString("\uE150", false, 180, 250, 90, a(0xFFFF));
                 render->drawString("Could not load sys-clk!", false, 110, 340, 25, a(0xFFFF));
             });
@@ -28,6 +28,7 @@ public:
         tsl::elm::List *clkList = new tsl::elm::List();
 
         toggleItem = new tsl::elm::ToggleListItem("sys-clk", state == ClkState::Enabled);
+        toggleItem->setStateChangedListener(Utils::clk::ToggleClkModule);
         clkList->addItem(toggleItem);
 
         ValueListItem *DockedCPU = new ValueListItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
@@ -60,7 +61,7 @@ public:
     }
 };
 
-class SysClkOverlay : public tsl::Overlay<GuiMain>
+class SysClkOverlay : public tsl::Overlay
 {
 public:
     virtual void initServices() override
@@ -99,7 +100,7 @@ public:
 
     virtual void onHide() override
     {
-        Utils::clk::ToggleClkModule(toggleItem->getState());
+        //Utils::clk::ToggleClkModule(toggleItem->getState());
 
         for (ValueListItem *item : ValueListItems)
             Utils::clk::ChangeConfiguration(item->getValues(), item->getCurValue(), item->getExtData());

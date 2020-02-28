@@ -4,8 +4,10 @@ namespace Utils::clk
 {
 void ToggleClkModule(bool toggleState)
 {
+    /*
     if (toggleState == (getClkState() == ClkState::Enabled) || !toggleState == (getClkState() == ClkState::Disabled))
         return;
+    */
 
     if (toggleState)
     {

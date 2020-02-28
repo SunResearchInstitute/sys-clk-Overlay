@@ -6,6 +6,7 @@ class ValueListItem : public tsl::elm::Element
 {
 public:
     ValueListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : tsl::elm::Element(), m_text(text), m_values(values), m_curValue(defaultPos), m_extdata(data) {}
+    ~ValueListItem() {}
 
     virtual void draw(tsl::gfx::Renderer *renderer) override
     {
@@ -64,7 +65,7 @@ public:
 
     const std::vector<std::string> getValues() { return this->m_values; }
 
-private:
+protected:
     std::string m_text;
     const std::vector<std::string> m_values;
     int m_curValue;
