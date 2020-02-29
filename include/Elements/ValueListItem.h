@@ -25,9 +25,13 @@ public:
 
     virtual bool onClick(u64 keys) override
     {
-        if (keys & KEY_A)
+        if (keys)
         {
-            m_curValue++;
+            if (keys & KEY_A)
+                m_curValue++;
+            else if (keys & KEY_X)
+                m_curValue--;
+
             long int size = m_values.size();
             if (m_curValue < 0)
                 m_curValue = size - 1;
