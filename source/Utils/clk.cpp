@@ -4,11 +4,6 @@ namespace Utils::clk
 {
 void ToggleClkModule(bool toggleState)
 {
-    /*
-    if (toggleState == (getClkState() == ClkState::Enabled) || !toggleState == (getClkState() == ClkState::Disabled))
-        return;
-    */
-
     if (toggleState)
     {
         NcmProgramLocation programLocation{
@@ -31,16 +26,18 @@ void ToggleClkModule(bool toggleState)
     }
 }
 
-void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName)
+void ChangeConfiguration(ValueListItem *item)
 {
-    u64 programId = Utils::clk::getCurrentProgramId();
-    std::string programName = Utils::clk::getProgramName(programId);
+    u64 CurProgramId = Utils::clk::getCurrentProgramId();
+    std::string programName = Utils::clk::getProgramName(CurProgramId);
     std::stringstream ss;
-    ss << 0 << std::hex << std::uppercase << programId;
+    ss << 0 << std::hex << std::uppercase << CurProgramId;
     std::string buff = ss.str();
     mkdir(CONFIGDIR, 0777);
     fclose(fopen(CONFIG_INI, "a"));
 
+    std::string configName = item->getExtData();
+    std::string selectedValue = item->getValues().at(item->getCurValue());
     simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
 
     simpleIniParser::IniSection *section = config->findSection(buff, false);
@@ -52,13 +49,13 @@ void ChangeConfiguration(const std::vector<std::string> configValues, int valueS
 
     if (section->findFirstOption(configName) == nullptr)
     {
-        if (configValues.at(valueSelection) != "0")
-            section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, configValues.at(valueSelection)));
+        if (selectedValue != "0")
+            section->options.push_back(new simpleIniParser::IniOption(simpleIniParser::IniOptionType::Option, configName, selectedValue));
     }
     else
     {
-        if (configValues.at(valueSelection) != "0")
-            section->findFirstOption(configName)->value = configValues.at(valueSelection);
+        if (selectedValue != "0")
+            section->findFirstOption(configName)->value = selectedValue;
         else
             section->options.erase(findIT(section->options, section->findFirstOption(configName)));
     }
