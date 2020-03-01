@@ -1,11 +1,11 @@
 #pragma once
 #include <switch.h>
 #include <filesystem>
-#include <vector>
 #include <cstring>
 #include <SimpleIniParser.hpp>
 #include <sys/stat.h>
 #include "helper.h"
+#include "../Elements/ValueListItem.h"
 
 #define CONTENTSDIR "sdmc:/atmosphere/contents/00FF0000636C6BFF"
 #define CONFIGDIR "sdmc:/config/sys-clk"
@@ -64,8 +64,8 @@ const std::vector<std::string> GPUClocks{
 
 namespace Utils::clk
 {
-void EnableClkModule(bool toggleState);
-void ChangeConfiguration(const std::vector<std::string> configValues, int valueSelection, std::string configName);
+void ToggleClkModule(bool toggleState);
+void ChangeConfiguration(ValueListItem *item);
 ClkState getClkState();
 u64 getCurrentProgramId();
 std::string getProgramName(u64 programId);
