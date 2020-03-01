@@ -10,11 +10,8 @@ public:
 
     virtual void draw(tsl::gfx::Renderer *renderer) override
     {
-        if (this->m_valueWidth == 0)
-        {
-            auto [width, height] = renderer->drawString(this->m_values.at(this->m_curValue).c_str(), false, 0, 0, 20, tsl::style::color::ColorTransparent);
-            this->m_valueWidth = width;
-        }
+        auto [width, height] = renderer->drawString(this->m_values.at(this->m_curValue).c_str(), false, 0, 0, 20, tsl::style::color::ColorTransparent);
+        this->m_valueWidth = width;
 
         renderer->drawRect(this->getX(), this->getY(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
         renderer->drawRect(this->getX(), this->getY() + this->getHeight(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
@@ -25,22 +22,25 @@ public:
 
     virtual bool onClick(u64 keys) override
     {
-        if (keys)
+        int newPos = m_curValue;
+        if (keys & KEY_A || keys & KEY_DLEFT)
+            newPos++;
+        else if (keys & KEY_X || keys & KEY_DRIGHT)
+            newPos--;
+
+        long int size = m_values.size();
+        if (newPos < 0)
+            newPos = size - 1;
+        if (size <= newPos)
+            newPos = 0;
+
+        if (newPos != m_curValue)
         {
-            if (keys & KEY_A)
-                m_curValue++;
-            else if (keys & KEY_X)
-                m_curValue--;
-
-            long int size = m_values.size();
-            if (m_curValue < 0)
-                m_curValue = size - 1;
-            if (size <= m_curValue)
-                m_curValue = 0;
-
+            m_curValue = newPos;
             return true;
         }
-        return false;
+        else
+            return false;
     }
 
     virtual inline void setValue(int curValue, bool faint = false) final
