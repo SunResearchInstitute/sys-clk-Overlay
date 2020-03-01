@@ -2,18 +2,15 @@
 #include "main.h"
 
 tsl::elm::ToggleListItem *ToggleClkItem;
-std::vector<ClkConfigListemItem *> ConfigItems;
-u64 CurProgramId;
+std::vector<ClkConfigListItem *> ConfigItems;
 
 class GuiMain : public tsl::Gui
 {
 public:
     virtual tsl::elm::Element *createUI() override
     {
-        CurProgramId = Utils::clk::getCurrentProgramId();
         tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", "");
         ClkState state = Utils::clk::getClkState();
-
         if ((int)state < 0)
         {
             tsl::elm::CustomDrawer *warning = new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *render, u16 x, u16 y, u16 w, u16 h) {
@@ -24,33 +21,34 @@ public:
             rootFrame->setContent(warning);
             return rootFrame;
         }
+
         tsl::elm::List *clkList = new tsl::elm::List();
 
         ToggleClkItem = new tsl::elm::ToggleListItem("sys-clk", state == ClkState::Enabled);
         ToggleClkItem->setStateChangedListener(Utils::clk::ToggleClkModule);
         clkList->addItem(ToggleClkItem);
 
-        ClkConfigListemItem *DockedCPU = new ClkConfigListemItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
+        ClkConfigListItem *DockedCPU = new ClkConfigListItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
         clkList->addItem(DockedCPU);
         ConfigItems.push_back(DockedCPU);
 
-        ClkConfigListemItem *DockedGPU = new ClkConfigListemItem("Docked GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "docked_gpu"), "docked_gpu");
+        ClkConfigListItem *DockedGPU = new ClkConfigListItem("Docked GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "docked_gpu"), "docked_gpu");
         clkList->addItem(DockedGPU);
         ConfigItems.push_back(DockedGPU);
 
-        ClkConfigListemItem *DockedMEM = new ClkConfigListemItem("Docked MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "docked_mem"), "docked_mem");
+        ClkConfigListItem *DockedMEM = new ClkConfigListItem("Docked MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "docked_mem"), "docked_mem");
         clkList->addItem(DockedMEM);
         ConfigItems.push_back(DockedMEM);
 
-        ClkConfigListemItem *HandheldCPU = new ClkConfigListemItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handheld_cpu"), "handheld_cpu");
+        ClkConfigListItem *HandheldCPU = new ClkConfigListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handheld_cpu"), "handheld_cpu");
         clkList->addItem(HandheldCPU);
         ConfigItems.push_back(HandheldCPU);
 
-        ClkConfigListemItem *HandheldGPU = new ClkConfigListemItem("Handheld GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "handheld_gpu"), "handheld_gpu");
+        ClkConfigListItem *HandheldGPU = new ClkConfigListItem("Handheld GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "handheld_gpu"), "handheld_gpu");
         clkList->addItem(HandheldGPU);
         ConfigItems.push_back(HandheldGPU);
 
-        ClkConfigListemItem *HandheldMEM = new ClkConfigListemItem("Handheld MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "handheld_mem"), "handheld_mem");
+        ClkConfigListItem *HandheldMEM = new ClkConfigListItem("Handheld MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "handheld_mem"), "handheld_mem");
         clkList->addItem(HandheldMEM);
         ConfigItems.push_back(HandheldMEM);
 
@@ -72,7 +70,7 @@ public:
 
     virtual void exitServices() override
     {
-        //Config will be saved in destructor
+        //Config will be saved in destructor of ClkConfigListemItem
         pmshellExit();
         nsExit();
         pminfoExit();
@@ -80,23 +78,24 @@ public:
 
     virtual void onShow() override
     {
-        if (CurProgramId != Utils::clk::getCurrentProgramId())
-        {
-            this->close();
-            return;
-        }
-
         if (ToggleClkItem != nullptr)
             ToggleClkItem->setState(Utils::clk::getClkState() == ClkState::Enabled);
 
-        for (ClkConfigListemItem *configItem : ConfigItems)
+        for (ClkConfigListItem *configItem : ConfigItems)
             if (configItem != nullptr)
                 configItem->setCurValue(Utils::clk::getConfigValuePos(configItem->getValues(), configItem->getExtData()));
     }
 
     virtual void onHide() override
     {
-        for (ClkConfigListemItem *configItem : ConfigItems)
+        ClkState state = Utils::clk::getClkState();
+        if ((int)state < 0)
+        {
+            this->close();
+            return;
+        }
+
+        for (ClkConfigListItem *configItem : ConfigItems)
             if (configItem != nullptr)
                 Utils::clk::ChangeConfiguration(configItem);
     }

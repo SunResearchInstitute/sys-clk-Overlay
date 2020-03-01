@@ -2,9 +2,9 @@
 #include "ValueListItem.h"
 #include "../Utils/clk.h"
 
-class ClkConfigListemItem : public ValueListItem
+class ClkConfigListItem : public ValueListItem
 {
 public:
-    ClkConfigListemItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : ValueListItem(text, values, defaultPos, data) {}
-    ~ClkConfigListemItem() { Utils::clk::ChangeConfiguration(this); }
+    ClkConfigListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : ValueListItem(text, values, defaultPos, data) {}
+    ~ClkConfigListItem() { Utils::clk::ChangeConfiguration(this); }
 };

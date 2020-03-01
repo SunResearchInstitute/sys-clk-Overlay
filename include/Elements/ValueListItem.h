@@ -23,9 +23,9 @@ public:
     virtual bool onClick(u64 keys) override
     {
         int newPos = m_curValue;
-        if (keys & KEY_A || keys & KEY_DLEFT)
+        if (keys & KEY_A || keys & KEY_DRIGHT)
             newPos++;
-        else if (keys & KEY_X || keys & KEY_DRIGHT)
+        else if (keys & KEY_X || keys & KEY_LEFT)
             newPos--;
 
         long int size = m_values.size();
