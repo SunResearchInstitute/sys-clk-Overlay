@@ -22,7 +22,7 @@ public:
             return rootFrame;
         }
 
-        tsl::elm::List *clkList = new tsl::elm::List();
+        tsl::elm::List *clkList = new tsl::elm::List(6);
 
         ToggleClkItem = new tsl::elm::ToggleListItem("sys-clk", state == ClkState::Enabled);
         ToggleClkItem->setStateChangedListener(Utils::clk::ToggleClkModule);
