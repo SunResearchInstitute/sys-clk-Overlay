@@ -2,6 +2,14 @@
 #include <vector>
 #include <algorithm>
 
+#define R_ASSERT(res_expr) \
+    ({ \
+        const auto rc = (res_expr); \
+        if (R_FAILED(rc)) {  \
+            fatalThrow(rc); \
+        } \
+    })
+
 template <typename T>
 int findInVector(const std::vector<T> &vecOfElements, const T &element)
 {
