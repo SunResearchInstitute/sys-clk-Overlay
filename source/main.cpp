@@ -22,33 +22,33 @@ public:
             return rootFrame;
         }
 
-        tsl::elm::List *clkList = new tsl::elm::List(6);
+        tsl::elm::List *clkList = new tsl::elm::List();
 
         ToggleClkItem = new tsl::elm::ToggleListItem("sys-clk", state == ClkState::Enabled);
         ToggleClkItem->setStateChangedListener(Utils::clk::ToggleClkModule);
         clkList->addItem(ToggleClkItem);
 
-        ClkConfigListItem *DockedCPU = new ClkConfigListItem("Docked CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "docked_cpu"), "docked_cpu");
+        ClkConfigListItem *DockedCPU = new ClkConfigListItem("Docked CPU Clock", CPUClocks, "docked_cpu");
         clkList->addItem(DockedCPU);
         ConfigItems.push_back(DockedCPU);
 
-        ClkConfigListItem *DockedGPU = new ClkConfigListItem("Docked GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "docked_gpu"), "docked_gpu");
+        ClkConfigListItem *DockedGPU = new ClkConfigListItem("Docked GPU Clock", GPUClocks, "docked_gpu");
         clkList->addItem(DockedGPU);
         ConfigItems.push_back(DockedGPU);
 
-        ClkConfigListItem *DockedMEM = new ClkConfigListItem("Docked MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "docked_mem"), "docked_mem");
+        ClkConfigListItem *DockedMEM = new ClkConfigListItem("Docked MEM Clock", MEMClocks, "docked_mem");
         clkList->addItem(DockedMEM);
         ConfigItems.push_back(DockedMEM);
 
-        ClkConfigListItem *HandheldCPU = new ClkConfigListItem("Handheld CPU Clock", CPUClocks, Utils::clk::getConfigValuePos(CPUClocks, "handheld_cpu"), "handheld_cpu");
+        ClkConfigListItem *HandheldCPU = new ClkConfigListItem("Handheld CPU Clock", CPUClocks, "handheld_cpu");
         clkList->addItem(HandheldCPU);
         ConfigItems.push_back(HandheldCPU);
 
-        ClkConfigListItem *HandheldGPU = new ClkConfigListItem("Handheld GPU Clock", GPUClocks, Utils::clk::getConfigValuePos(GPUClocks, "handheld_gpu"), "handheld_gpu");
+        ClkConfigListItem *HandheldGPU = new ClkConfigListItem("Handheld GPU Clock", GPUClocks, "handheld_gpu");
         clkList->addItem(HandheldGPU);
         ConfigItems.push_back(HandheldGPU);
 
-        ClkConfigListItem *HandheldMEM = new ClkConfigListItem("Handheld MEM Clock", MEMClocks, Utils::clk::getConfigValuePos(MEMClocks, "handheld_mem"), "handheld_mem");
+        ClkConfigListItem *HandheldMEM = new ClkConfigListItem("Handheld MEM Clock", MEMClocks, "handheld_mem");
         clkList->addItem(HandheldMEM);
         ConfigItems.push_back(HandheldMEM);
 
@@ -83,7 +83,7 @@ public:
 
         for (ClkConfigListItem *configItem : ConfigItems)
             if (configItem != nullptr)
-                configItem->setCurValue(Utils::clk::getConfigValuePos(configItem->getValues(), configItem->getExtData()));
+                configItem->setConfigCurValue();
     }
 
     virtual void onHide() override

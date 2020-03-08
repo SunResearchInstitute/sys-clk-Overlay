@@ -1,10 +1,16 @@
 #pragma once
 #include "ValueListItem.h"
-#include "../Utils/clk.h"
+#include "helper.h"
 
 class ClkConfigListItem : public ValueListItem
 {
 public:
-    ClkConfigListItem(std::string text, const std::vector<std::string> values, int defaultPos, const std::string data) : ValueListItem(text, values, defaultPos, data) {}
-    ~ClkConfigListItem() { Utils::clk::ChangeConfiguration(this); }
+    ClkConfigListItem(std::string text, const std::vector<std::string> &values, const std::string &configName);
+    ~ClkConfigListItem();
+
+    const std::string &getConfigName() { return ConfigName; };
+    void setConfigCurValue();
+
+private:
+    const std::string &ConfigName;
 };

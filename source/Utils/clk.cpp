@@ -26,7 +26,7 @@ void ToggleClkModule(bool toggleState)
     }
 }
 
-void ChangeConfiguration(ValueListItem *item)
+void ChangeConfiguration(ClkConfigListItem *item)
 {
     u64 CurProgramId = Utils::clk::getCurrentProgramId();
     std::string programName = Utils::clk::getProgramName(CurProgramId);
@@ -36,7 +36,7 @@ void ChangeConfiguration(ValueListItem *item)
     mkdir(CONFIGDIR, 0777);
     fclose(fopen(CONFIG_INI, "a"));
 
-    std::string configName = item->getExtData();
+    std::string configName = item->getConfigName();
     std::string selectedValue = item->getValues().at(item->getCurValue());
     simpleIniParser::Ini *config = simpleIniParser::Ini::parseFile(CONFIG_INI);
 
@@ -67,7 +67,7 @@ void ChangeConfiguration(ValueListItem *item)
     delete config;
 }
 
-int getConfigValuePos(const std::vector<std::string> values, std::string value)
+int getConfigValuePos(const std::vector<std::string> &values, std::string value)
 {
     u64 programId = getCurrentProgramId();
     std::string programName = getProgramName(programId);
