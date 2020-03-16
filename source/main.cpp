@@ -83,7 +83,7 @@ public:
 
         for (ClkConfigListItem *configItem : ConfigItems)
             if (configItem != nullptr)
-                configItem->setConfigCurValue();
+                configItem->setConfigWithCurValue();
     }
 
     virtual void onHide() override

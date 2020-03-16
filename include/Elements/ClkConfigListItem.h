@@ -9,7 +9,7 @@ public:
     ~ClkConfigListItem();
 
     const std::string &getConfigName() { return ConfigName; };
-    void setConfigCurValue();
+    void setConfigWithCurValue();
 
 private:
     const std::string &ConfigName;
