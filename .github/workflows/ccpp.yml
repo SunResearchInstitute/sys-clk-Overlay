@@ -42,11 +42,13 @@ jobs:
         run: make
 
       - uses: actions/upload-artifact@v2
+        name: Upload sys-clk-Overlay.elf
         with:
           name: sys-clk-Overlay.elf
           path: sys-clk-Overlay.elf
 
       - uses: actions/upload-artifact@v2
+        name: Upload sys-clk-Overlay.ovl
         with:
           name: sys-clk-Overlay.ovl
           path: sys-clk-Overlay.ovl
