@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <tesla.hpp>
 
 class ValueListItem : public tsl::elm::ListItem
@@ -11,13 +10,13 @@ public:
     virtual void draw(tsl::gfx::Renderer *renderer) override
     {
         auto [width, height] = renderer->drawString(this->m_values.at(this->m_curValue).c_str(), false, 0, 0, 20, tsl::style::color::ColorTransparent);
-        this->m_valueWidth = width;
+        this->m_textWidth = width;
 
         renderer->drawRect(this->getX(), this->getY(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
         renderer->drawRect(this->getX(), this->getY() + this->getHeight(), this->getWidth(), 1, a({0x5, 0x5, 0x5, 0xF}));
 
         renderer->drawString(this->m_text.c_str(), false, this->getX() + 20, this->getY() + 45, 23, a({0xF, 0xF, 0xF, 0xF}));
-        renderer->drawString(this->m_values.at(m_curValue).c_str(), false, this->getX() + this->getWidth() - this->m_valueWidth - 20, this->getY() + 45, 20, this->m_faint ? a({0x6, 0x6, 0x6, 0xF}) : a({0x5, 0xC, 0xA, 0xF}));
+        renderer->drawString(this->m_values.at(m_curValue).c_str(), false, this->getX() + this->getWidth() - this->m_textWidth - 20, this->getY() + 45, 20, this->m_faint ? a({0x6, 0x6, 0x6, 0xF}) : a({0x5, 0xC, 0xA, 0xF}));
     }
 
     virtual bool onClick(u64 keys) override
@@ -47,7 +46,7 @@ public:
     {
         this->m_curValue = curValue;
         this->m_faint = faint;
-        this->m_valueWidth = 0;
+        this->m_textWidth = 0;
     }
 
     int getCurValue() { return this->m_curValue; }
