@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include "helper.h"
 #include "../Elements/ClkConfigListItem.h"
+#include <fstream>
 
 #define CONTENTSDIR "sdmc:/atmosphere/contents/00FF0000636C6BFF"
 #define CONFIGDIR "sdmc:/config/sys-clk"

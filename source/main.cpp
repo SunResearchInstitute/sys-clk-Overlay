@@ -9,7 +9,7 @@ class GuiMain : public tsl::Gui
 public:
     virtual tsl::elm::Element *createUI() override
     {
-        tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", "");
+        tsl::elm::OverlayFrame *rootFrame = new tsl::elm::OverlayFrame("sys-clk Overlay", "Choclate Chip Flavor");
         ClkState state = Utils::clk::getClkState();
         if ((int)state < 0)
         {
