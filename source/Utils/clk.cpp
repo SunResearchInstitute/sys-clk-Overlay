@@ -37,7 +37,7 @@ namespace Utils::clk
             ss << 0 << std::hex << std::uppercase << CurProgramId;
             std::string buff = ss.str();
             mkdir(CONFIGDIR, 0777);
-            std::ofstream file { CONFIG_INI };
+            std::ofstream file{CONFIG_INI};
 
             std::string configName = item->getConfigName();
             std::string selectedValue = item->getValues().at(item->getCurValue());
@@ -104,9 +104,12 @@ namespace Utils::clk
             if (R_SUCCEEDED(pmdmntGetProcessId(&pid, sysClkTid)))
             {
                 if (pid > 0)
+                {
                     //note that this returns instantly
                     //because the file might not exist but still be running
-                    return ClkState::Enabled;
+                    clkState = clkState;
+                    return;
+                }
                 else
                     clkState = ClkState::Error;
             }
