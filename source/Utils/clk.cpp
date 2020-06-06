@@ -107,7 +107,7 @@ namespace Utils::clk
                 {
                     //note that this returns instantly
                     //because the file might not exist but still be running
-                    clkState = clkState;
+                    clkState = ClkState::Enabled;
                     return;
                 }
                 else
